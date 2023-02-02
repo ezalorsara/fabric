@@ -5,6 +5,7 @@ const nextConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       fabric: "fabric-pure-browser",
+      canvas: false,
     };
 
     return config;
