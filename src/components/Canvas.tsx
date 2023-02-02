@@ -1,14 +1,20 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { fabric } from "fabric";
 import { PDFDocument } from "pdf-lib";
+import { Document, Page, pdfjs } from "react-pdf";
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 const Canvas: React.FC = () => {
+  const [base64, setBase64] = useState("");
   const canvasRef = useRef<fabric.Canvas | null>(null);
   const doPdf = async () => {
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage();
     page.drawText("You can create PDFs!");
-    const pdfBytes = await pdfDoc.save();
+    const pdfBytes = await pdfDoc.saveAsBase64({ dataUri: true });
+    console.log("pdfBytes: ", pdfBytes);
+    setBase64(pdfBytes);
     console.log(pdfBytes);
   };
   useEffect(() => {
@@ -35,6 +41,11 @@ const Canvas: React.FC = () => {
   return (
     <div>
       <canvas id="canvas" width={500} height={500} />
+      {!!base64 && (
+        <Document file={base64} onLoadSuccess={() => {}}>
+          <Page pageNumber={1} />
+        </Document>
+      )}
     </div>
   );
 };
